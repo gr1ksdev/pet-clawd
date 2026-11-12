@@ -1,0 +1,57 @@
+name: Android APK
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Instalar Rust + targets Android
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+
+      - name: Instalar JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Instalar Android SDK + NDK
+        uses: android-actions/setup-android@v3
+
+      - name: Componentes do SDK
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager --install "platform-tools" "platforms;android-34" \
+            "build-tools;34.0.0" "ndk;27.0.12077973" >/dev/null
+          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+
+      - name: Instalar Tauri CLI
+        run: cargo install tauri-cli --version "^2" --locked
+
+      - name: Ícones (todas as densidades)
+        run: cargo tauri icon app-icon.png
+
+      - name: Inicializar projeto Android (gen/)
+        run: cargo tauri android init
+
+      - name: Build APK (debug, aarch64)
+        run: cargo tauri android build --target aarch64 --debug --apk
+
+      - name: Localizar APK
+        id: apk
+        run: echo "path=$(find src-tauri/gen/android -name '*.apk' -type f | head -1)" >> "$GITHUB_OUTPUT"
+
+      - name: Publicar artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: PetClawd-debug-apk
+          path: ${{ steps.apk.outputs.path }}
+          if-no-files-found: error

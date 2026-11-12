@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark" class="fs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Pet Clawd</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@500;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+/* ================= TEMAS (ESTILO NOMERKLIKER) ================= */
+:root, [data-theme="dark"] {
+  --bg: #0e1220;
+  --bg-glow1: rgba(64, 104, 255, .22);
+  --bg-glow2: rgba(150, 80, 255, .14);
+  --glass: #1a2132;
+  --glass2: #232c42;
+  --stroke: rgba(255, 255, 255, .07);
+  --solid: #1d2436;
+  --text: #eef1f8;
+  --muted: #8790a8;
+  --acc1: #4f7cff; --acc2: #8a5cff; --acc-text: #fff;
+  --acc-glow: rgba(90, 110, 255, .45);
+  --menu1: #2d58d6; --menu2: #141f4d;
+  --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+}
+[data-theme="light"] {
+  --bg: #eef1f8; --bg-glow1: rgba(79, 124, 255, .18); --bg-glow2: rgba(138, 92, 255, .12);
+  --glass: rgba(255, 255, 255, .48); --glass2: rgba(255, 255, 255, .62); --stroke: rgba(255, 255, 255, .85); --solid: #ffffff;
+  --text: #141826; --muted: #687089; --menu1: #4f7cff; --menu2: #2a3f9e; --shadow: 0 10px 30px rgba(40, 60, 120, .12);
+  --acc1: #4f7cff; --acc2: #8a5cff; --acc-text: #fff; --acc-glow: rgba(79, 124, 255, .3);
+}
+[data-theme="pink"] {
+  --bg: #fdeaf3; --bg-glow1: rgba(255, 110, 170, .25); --bg-glow2: rgba(170, 110, 255, .15);
+  --glass: rgba(255, 255, 255, .42); --glass2: rgba(255, 255, 255, .58); --stroke: rgba(255, 255, 255, .8); --solid: #fff6fa;
+  --text: #3b1328; --muted: #9b6a82; --acc1: #ff5fa2; --acc2: #b45cff; --acc-glow: rgba(255, 95, 162, .4);
+  --menu1: #ff7fb5; --menu2: #9b3576; --shadow: 0 10px 30px rgba(160, 40, 100, .15);
+}
+[data-theme="gold"] {
+  --bg: #120e05; --bg-glow1: rgba(255, 190, 60, .2); --bg-glow2: rgba(255, 120, 30, .1);
+  --glass: #241d0e; --glass2: #302713; --stroke: rgba(255, 220, 140, .14); --solid: #1e180b;
+  --text: #fbf1d6; --muted: #b3a172; --acc1: #ffcc4d; --acc2: #e8901c; --acc-text: #241703; --acc-glow: rgba(255, 190, 60, .45);
+  --menu1: #c8961f; --menu2: #3d2a06; --shadow: 0 10px 30px rgba(0, 0, 0, .45);
+}
+[data-theme="silver"] {
+  --bg: #1b1e24; --bg-glow1: rgba(200, 215, 240, .14); --bg-glow2: rgba(140, 160, 200, .1);
+  --glass: #262b34; --glass2: #323949; --stroke: rgba(255, 255, 255, .12); --solid: #262a32;
+  --text: #f3f5f8; --muted: #a6adba; --acc1: #b9c4d6; --acc2: #7d8aa3; --acc-text: #14171c; --acc-glow: rgba(200, 215, 240, .35);
+  --menu1: #8e9ab0; --menu2: #343b48; --shadow: 0 10px 30px rgba(0, 0, 0, .45);
+}
+:root {
+  --acc: linear-gradient(135deg, var(--acc1), var(--acc2));
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body {
+  background:
+    radial-gradient(90% 55% at 0% 0%, var(--bg-glow1), transparent 70%),
+    radial-gradient(80% 50% at 100% 100%, var(--bg-glow2), transparent 70%),
+    var(--bg);
+  background-attachment: fixed;
+  color: var(--text);
+  font: 15px/1.35 Manrope, Inter, system-ui, -apple-system, sans-serif;
+  overscroll-behavior: none; user-select: none; -webkit-user-select: none;
+}
+button, select, input { font: inherit; color: inherit; }
+button { border: 0; background: none; cursor: pointer; padding: 0; }
+[hidden] { display: none !important; }
+.muted { color: var(--muted); }
+.ic { width: 22px; height: 22px; display: block; }
+
+/* ================= JANELA (APP = TELA CHEIA) ================= */
+#win {
+  position: absolute; inset: 0; transform: translateZ(0); overflow: hidden;
+  background:
+    radial-gradient(90% 55% at 0% 0%, var(--bg-glow1), transparent 70%),
+    radial-gradient(80% 50% at 100% 100%, var(--bg-glow2), transparent 70%),
+    var(--bg);
+}
+
+/* ================= PAGINAS E CONTEUDO (#APP) ================= */
+#app { height: 100%; overflow-y: auto; overflow-x: hidden; }
+.page { padding: 8px 14px 96px; animation: rise .25s ease; }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } }
+
+/* ================= CABECALHO ================= */
+.head {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; gap: 10px; padding: 14px 14px 10px;
+  background: linear-gradient(var(--bg) 70%, transparent);
+}
+.head h1 { font-size: 22px; margin: 0; flex: 1; font-weight: 800; letter-spacing: -.02em; }
+.icon-btn {
+  width: 40px; height: 40px; display: grid; place-items: center; border-radius: 13px;
+  background: var(--glass); border: 1px solid var(--stroke); backdrop-filter: blur(10px);
+}
+.head-right { text-align: right; font-size: 11.5px; color: var(--muted); line-height: 1.45; }
+.head-right b { color: var(--text); font-size: 15px; font-weight: 800; }
+
+/* ================= BOTOES E CARTOES ================= */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 12px 14px; border-radius: 14px; font-weight: 700; font-size: 14px;
+  background: var(--glass2); border: 1px solid var(--stroke);
+  transition: transform .1s, opacity .2s, box-shadow .2s;
+}
+.btn:active { transform: scale(.96); }
+.btn:disabled { opacity: .38; pointer-events: none; }
+.btn-blue { background: var(--acc); color: var(--acc-text); border: 0; box-shadow: 0 6px 20px var(--acc-glow), inset 0 1px 0 rgba(255,255,255,.25); }
+.btn-red { background: linear-gradient(135deg, #ff6b6b, #e0344a); color: #fff; border: 0; box-shadow: 0 6px 18px rgba(230, 60, 80, .35), inset 0 1px 0 rgba(255,255,255,.25); }
+.btn-wide { width: 100%; }
+.btn-sm { padding: 8px 12px; font-size: 12px; border-radius: 11px; }
+
+.chip {
+  padding: 9px 14px; border-radius: 13px; font-size: 13px; font-weight: 700; white-space: nowrap;
+  background: var(--glass); border: 1px solid var(--stroke); cursor: pointer;
+}
+.chip.on { background: var(--acc); color: var(--acc-text); border-color: transparent; box-shadow: 0 4px 14px var(--acc-glow); }
+.chips { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 12px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+
+.card {
+  background: var(--glass); border: 1px solid var(--stroke); border-radius: 20px; padding: 16px;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.card + .card { margin-top: 12px; }
+.card h2, .card h3 { margin: 0 0 6px; font-size: 17px; font-weight: 800; }
+.card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.4; }
+
+.row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.bar { height: 8px; border-radius: 4px; background: var(--glass2); overflow: hidden; margin: 10px 0; border: 1px solid var(--stroke); }
+.bar > i { display: block; height: 100%; background: var(--acc); border-radius: 4px; box-shadow: 0 0 10px var(--acc-glow); transition: width .3s ease; }
+
+.pill {
+  display: flex; align-items: center; gap: 6px; padding: 7px 12px 7px 8px; border-radius: 999px;
+  background: var(--glass); border: 1px solid var(--stroke); backdrop-filter: blur(10px);
+  font-weight: 800; font-size: 14px; font-variant-numeric: tabular-nums;
+}
+.pill.bump { animation: bump .25s ease; }
+@keyframes bump { 40% { transform: scale(1.08); } }
+
+/* Campo de texto (ajustes de IA) */
+.fld {
+  width: 100%; padding: 12px 14px; border-radius: 14px; margin-top: 8px;
+  background: var(--glass2); border: 1px solid var(--stroke);
+  color: var(--text); font-weight: 600; font-size: 13.5px; outline: none;
+}
+.fld:focus { border-color: var(--acc1); box-shadow: 0 0 0 2px var(--acc-glow); }
+
+/* ================= PALCO DO PET ================= */
+.pet-hero {
+  text-align: center; padding: 22px 14px 18px; position: relative; overflow: hidden;
+}
+.pet-canvas-wrap {
+  width: 140px; height: 110px; margin: 0 auto 12px; display: grid; place-items: center; cursor: pointer;
+}
+.pet-canvas-wrap canvas {
+  image-rendering: pixelated; transform: scale(2.8); transition: transform .15s ease;
+}
+.pet-canvas-wrap:active canvas { transform: scale(2.5); }
+
+.speech-bubble {
+  position: relative; background: var(--glass2); border: 1px solid var(--stroke); border-radius: 16px;
+  padding: 10px 16px; margin: 0 auto 14px; font-size: 13.5px; font-weight: 600; display: inline-block;
+  max-width: 92%; box-shadow: var(--shadow);
+  animation: floatBubble 3s ease-in-out infinite alternate;
+}
+.speech-bubble::after {
+  content: ""; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+  border-width: 6px 6px 0; border-style: solid; border-color: var(--glass2) transparent; display: block; width: 0;
+}
+@keyframes floatBubble { from { transform: translateY(0); } to { transform: translateY(-4px); } }
+
+.badges { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.badge {
+  padding: 6px 12px; border-radius: 999px; background: var(--glass2); border: 1px solid var(--stroke);
+  font-size: 11.5px; font-weight: 700; display: flex; align-items: center; gap: 4px;
+}
+.badge.accent { background: var(--acc); color: var(--acc-text); border-color: transparent; box-shadow: 0 2px 10px var(--acc-glow); }
+
+.btn-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 12px;
+}
+
+/* ================= MOCHILA / ITENS ================= */
+.item-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+.item-card {
+  background: var(--glass2); border: 1px solid var(--stroke); border-radius: 18px; padding: 12px;
+  display: flex; flex-direction: column; gap: 8px; cursor: pointer; transition: transform .12s, border-color .15s;
+}
+.item-card:active { transform: scale(.97); border-color: var(--acc1); }
+.item-card.empty { opacity: .45; }
+.item-icon {
+  font-size: 26px; width: 44px; height: 44px; border-radius: 14px; background: var(--glass);
+  display: grid; place-items: center; border: 1px solid var(--stroke);
+}
+.item-title { font-size: 14px; font-weight: 800; }
+.item-desc { font-size: 11.5px; color: var(--muted); line-height: 1.35; }
+.item-count { position: absolute; }
+.it-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 800;
+  background: var(--glass); border: 1px solid var(--stroke); font-variant-numeric: tabular-nums;
+}
+
+/* ================= ESTATISTICAS ================= */
+.stat-row {
+  display: flex; justify-content: space-between; align-items: center; padding: 10px 0;
+  border-bottom: 1px solid var(--stroke); font-size: 13.5px;
+}
+.stat-row:last-child { border-bottom: 0; }
+.stat-label { color: var(--muted); }
+.stat-val { font-weight: 800; font-size: 14px; }
+
+/* ================= PARTICULAS E SONS ================= */
+.fx-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
+@keyframes floatUp { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-26px); } }
+
+/* ================= TOAST ================= */
+.toast {
+  position: absolute; bottom: 84px; left: 50%; transform: translateX(-50%) translateY(20px);
+  padding: 10px 18px; border-radius: 999px; background: var(--solid); border: 1px solid var(--stroke);
+  box-shadow: var(--shadow); font-size: 13px; font-weight: 700; color: var(--text);
+  pointer-events: none; opacity: 0; transition: opacity .25s ease, transform .25s ease; z-index: 500;
+  white-space: nowrap; max-width: 88%; overflow: hidden; text-overflow: ellipsis;
+}
+.toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ================= DOCK INFERIOR ================= */
+.dock {
+  position: fixed; bottom: 12px; left: 14px; right: 14px; height: 64px; border-radius: 22px;
+  background: var(--glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--stroke); display: flex; align-items: center; justify-content: space-around;
+  z-index: 50; box-shadow: var(--shadow);
+}
+.dock-btn {
+  position: relative; width: 50px; height: 50px; border-radius: 16px; display: grid; place-items: center;
+  background: transparent; border: 0; color: var(--muted); cursor: pointer; transition: all .18s ease;
+}
+.dock-btn.active { background: var(--acc); color: var(--acc-text); box-shadow: 0 4px 16px var(--acc-glow); }
+</style>
+</head>
+<body>
+  <div id="win">
+    <canvas id="fx-canvas" class="fx-canvas"></canvas>
+
+    <!-- Interface Completa (#app) -->
+    <div id="app">
+      <div class="head">
+        <h1>Pet Clawd</h1>
+        <div class="head-right">
+          <div class="pill" id="head-bond-pill">&#10084;&#65039; <span id="head-bond-val">0%</span></div>
+        </div>
+      </div>
+
+      <!-- ABA 1: PALCO DO PET -->
+      <div class="page" id="page-pet">
+        <div class="card pet-hero">
+          <div class="speech-bubble" id="pet-speech">Ol&aacute;! &#10084;&#65039;</div>
+          <div class="pet-canvas-wrap" onclick="actPet(event)" title="Toque para fazer carinho!">
+            <canvas id="pet-canvas" width="36" height="26"></canvas>
+          </div>
+          <div class="badges">
+            <span class="badge accent" id="badge-mood">&#128522; Contente</span>
+            <span class="badge" id="badge-bond">&#128156; Conhecidos (0/100)</span>
+            <span class="badge" id="badge-days">&#128197; 1 dia juntos</span>
+            <span class="badge" id="badge-mess" hidden>&#128169; 0 sujeiras</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Intera&ccedil;&otilde;es R&aacute;pidas</h2>
+          <p>A&ccedil;&otilde;es diretas com o Clawd.</p>
+          <div class="btn-grid">
+            <button class="btn btn-blue" onclick="actFeed(event)">&#127828; Dar Petisco</button>
+            <button class="btn" onclick="actPet(event)">&#10084;&#65039; Fazer Carinho</button>
+            <button class="btn" onclick="actToy(event, 'ball')">&#127934; Jogar Bolinha</button>
+            <button class="btn" onclick="actJump(event)">&#129432; Fazer Pular</button>
+            <button class="btn" onclick="actClean(event)">&#129529; Limpar Sujeira</button>
+            <button class="btn" onclick="actSleep(event)">&#128164; Modo Soneca</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABA 2: MOCHILA DE ITENS -->
+      <div class="page" id="page-bag" hidden>
+        <div class="card">
+          <h2>Mochila de Itens</h2>
+          <p>Petiscos e brinquedos prontos para usar com o Clawd. A mochila reabastece todo dia.</p>
+        </div>
+        <div class="item-grid">
+          <div class="item-card" id="card-fish" onclick="actFeed(event, 'fish')">
+            <div class="item-icon">&#128031;</div>
+            <div class="item-title">Peixe Fresco</div>
+            <div class="item-desc">O petisco predileto do Clawd.</div>
+            <button class="btn btn-blue btn-sm">&#127828; Oferecer <span class="it-badge" id="inv-fish">0</span></button>
+          </div>
+          <div class="item-card" id="card-burger" onclick="actFeed(event, 'burger')">
+            <div class="item-icon">&#127828;</div>
+            <div class="item-title">Hamb&uacute;rguer</div>
+            <div class="item-desc">Mata aquela fome de le&atilde;o!</div>
+            <button class="btn btn-blue btn-sm">&#127828; Oferecer <span class="it-badge" id="inv-burger">0</span></button>
+          </div>
+          <div class="item-card" id="card-coffee" onclick="actFeed(event, 'coffee')">
+            <div class="item-icon">&#9749;</div>
+            <div class="item-title">Caf&eacute; Quentinho</div>
+            <div class="item-desc">Deixa o Clawd r&aacute;pido e alerta.</div>
+            <button class="btn btn-blue btn-sm">&#9749; Servir <span class="it-badge" id="inv-coffee">0</span></button>
+          </div>
+          <div class="item-card" id="card-cookie" onclick="actFeed(event, 'cookie')">
+            <div class="item-icon">&#127850;</div>
+            <div class="item-title">Biscoito</div>
+            <div class="item-desc">Um agrado crocante para a tarde.</div>
+            <button class="btn btn-blue btn-sm">&#127850; Dar <span class="it-badge" id="inv-cookie">0</span></button>
+          </div>
+          <div class="item-card" id="card-ball" onclick="actToy(event, 'ball')">
+            <div class="item-icon">&#127934;</div>
+            <div class="item-title">Bolinha de T&ecirc;nis</div>
+            <div class="item-desc">Arremesse para o Clawd buscar.</div>
+            <button class="btn btn-blue btn-sm">&#127934; Arremessar <span class="it-badge" id="inv-ball">0</span></button>
+          </div>
+          <div class="item-card" id="card-yarn" onclick="actToy(event, 'yarn')">
+            <div class="item-icon">&#129526;</div>
+            <div class="item-title">Novelo de L&atilde;</div>
+            <div class="item-desc">Para rolar e embolar as patinhas.</div>
+            <button class="btn btn-blue btn-sm">&#129526; Jogar <span class="it-badge" id="inv-yarn">0</span></button>
+          </div>
+          <div class="item-card" id="card-mouse" onclick="actToy(event, 'mouse')">
+            <div class="item-icon">&#128001;</div>
+            <div class="item-title">Ratinho</div>
+            <div class="item-desc">Brinquedo interativo mec&acirc;nico.</div>
+            <button class="btn btn-blue btn-sm">&#128001; Soltar <span class="it-badge" id="inv-mouse">0</span></button>
+          </div>
+          <div class="item-card" onclick="actClean(event)">
+            <div class="item-icon">&#129529;</div>
+            <div class="item-title">Esponja M&aacute;gica</div>
+            <div class="item-desc">Limpa qualquer sujeirinha na tela.</div>
+            <button class="btn btn-blue btn-sm">&#129529; Limpar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABA 3: MEMORIA E VINCULO -->
+      <div class="page" id="page-brain" hidden>
+        <div class="card">
+          <h2>V&iacute;nculo e Afinidade</h2>
+          <p>O quanto voc&ecirc; e o Clawd se conhecem e a proximidade juntos.</p>
+          <div class="bar"><i id="brain-bar" style="width: 0%;"></i></div>
+          <div class="row" style="font-size: 13px; font-weight: 800;">
+            <span id="brain-bond-label">Conhecidos</span>
+            <span id="brain-bond-val">0 / 100</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Estat&iacute;sticas Juntos</h2>
+          <div class="stat-row"><span class="stat-label">Carinhos recebidos:</span><span class="stat-val" id="stat-pets">0</span></div>
+          <div class="stat-row"><span class="stat-label">Itens devorados:</span><span class="stat-val" id="stat-eaten">0</span></div>
+          <div class="stat-row"><span class="stat-label">Brincadeiras:</span><span class="stat-val" id="stat-toys">0</span></div>
+          <div class="stat-row"><span class="stat-label">Sujeiras limpas:</span><span class="stat-val" id="stat-cleaned">0</span></div>
+          <div class="stat-row"><span class="stat-label">Sess&otilde;es juntos:</span><span class="stat-val" id="stat-sessions">0</span></div>
+        </div>
+
+        <div class="card">
+          <h2>Lembran&ccedil;as do Clawd</h2>
+          <p>O Clawd guarda suas mem&oacute;rias no aparelho. Exporte um arquivo <b>.clawd</b> para guardar ou levar para outro aparelho.</p>
+          <div style="margin-top: 14px;">
+            <button class="btn btn-blue btn-wide" onclick="actBackup(event)">&#128190; Exportar Backup (.clawd)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABA 4: AJUSTES E TEMAS -->
+      <div class="page" id="page-settings" hidden>
+        <div class="card">
+          <h2>Temas Visuais (Design Oficial)</h2>
+          <p style="margin-bottom: 12px;">Escolha a paleta de cores do visual liquid glass.</p>
+          <div class="chips" id="theme-chips">
+            <button class="chip on" data-theme="dark" onclick="setTheme('dark')">Escuro</button>
+            <button class="chip" data-theme="light" onclick="setTheme('light')">Claro</button>
+            <button class="chip" data-theme="pink" onclick="setTheme('pink')">Rosa</button>
+            <button class="chip" data-theme="gold" onclick="setTheme('gold')">Dourado</button>
+            <button class="chip" data-theme="silver" onclick="setTheme('silver')">Prata</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Intelig&ecirc;ncia Artificial</h2>
+          <p>D&aacute; ao Clawd falas pr&oacute;prias. A chave fica salva apenas no seu aparelho.</p>
+          <div class="chips" style="margin-top: 10px;" id="ai-prov-chips">
+            <button class="chip on" data-p="0" onclick="setProv(0)">Gemini</button>
+            <button class="chip" data-p="1" onclick="setProv(1)">OpenAI-compat&iacute;vel</button>
+          </div>
+          <input class="fld" id="ai-key" type="password" placeholder="Chave da API (Gemini ou OpenAI)">
+          <input class="fld" id="ai-model" placeholder="Modelo — vazio usa padr&atilde;o (gemini-2.0-flash / gpt-4o-mini)">
+          <input class="fld" id="ai2-url" placeholder="Fallback: URL OpenAI-compat&iacute;vel (OpenRouter, Groq, Ollama…)">
+          <input class="fld" id="ai2-key" type="password" placeholder="Fallback: chave (opcional)">
+          <input class="fld" id="ai2-model" placeholder="Fallback: modelo (vazio desativa o fallback)">
+          <div class="btn-grid">
+            <button class="btn btn-blue" onclick="saveAi()">&#128190; Salvar IA</button>
+            <button class="btn" onclick="testAi()">&#128483;&#65039; Testar IA</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dock Inferior -->
+    <div class="dock">
+      <button class="dock-btn active" data-tab="pet" onclick="switchTab('pet')" title="Pet">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="13" r="7"/><path d="M7 6L5 10M17 6L19 10M9 13h.01M15 13h.01M10 16c1 .5 3 .5 4 0"/></svg>
+      </button>
+      <button class="dock-btn" data-tab="bag" onclick="switchTab('bag')" title="Mochila">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 8V6a4 4 0 0 1 8 0v2"/><rect x="4" y="8" width="16" height="13" rx="3"/></svg>
+      </button>
+      <button class="dock-btn" data-tab="brain" onclick="switchTab('brain')" title="Memória">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 4v16M8 8a3 3 0 0 0-4 3 3 3 0 0 0 2 2.8 3 3 0 0 0-2 2.7 3 3 0 0 0 4 3M16 8a3 3 0 0 1 4 3 3 3 0 0 1-2 2.8 3 3 0 0 1 2 2.7 3 3 0 0 1-4 3"/></svg>
+      </button>
+      <button class="dock-btn" data-tab="settings" onclick="switchTab('settings')" title="Ajustes">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script>
+  // ================= AUDIO (WEB AUDIO API) =================
+  let actx = null;
+  function beep(freq, dur = 0.08, vol = 0.05, delay = 0) {
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      const t = actx.currentTime + delay;
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.frequency.value = freq; o.type = "triangle";
+      g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g).connect(actx.destination);
+      o.start(t); o.stop(t + dur);
+    } catch (e) {}
+  }
+
+  // ================= PONTE TAURI (substitui o hack document.title) =====
+  function T(cmd, args) {
+    const inv = window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke;
+    if (!inv) return Promise.reject("ponte nativa indisponível");
+    return inv(cmd, args || {});
+  }
+
+  // ================= PARTICULAS (CANVAS) =================
+  const canvas = document.getElementById("fx-canvas");
+  const ctx = canvas ? canvas.getContext("2d") : null;
+  let parts = [];
+  function resizeCanvas() {
+    if (!canvas) return;
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  }
+  window.addEventListener("resize", resizeCanvas);
+  resizeCanvas();
+
+  function burst(x, y, color = "#ff5a5a", count = 28, power = 1) {
+    if (!ctx) return;
+    for (let i = 0; i < count; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const v = (2 + Math.random() * 5) * power;
+      parts.push({
+        x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 2 * power,
+        life: 1, decay: 0.015 + Math.random() * 0.025,
+        color, r: 2 + Math.random() * 3
+      });
+    }
+  }
+
+  function loopParticles() {
+    if (ctx && parts.length) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = parts.length - 1; i >= 0; i--) {
+        const p = parts[i];
+        p.x += p.vx; p.y += p.vy; p.vy += 0.15;
+        p.life -= p.decay;
+        if (p.life <= 0) { parts.splice(i, 1); continue; }
+        ctx.globalAlpha = p.life;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+    requestAnimationFrame(loopParticles);
+  }
+  requestAnimationFrame(loopParticles);
+
+  // ================= TOAST =================
+  let toastTimer = null;
+  function toast(msg) {
+    const el = document.getElementById("toast");
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add("on");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("on"), 2400);
+  }
+
+  // ================= RENDERIZACAO DO ESTADO =================
+  function bondTier(b) {
+    if (b >= 85) return "Melhores Amigos";
+    if (b >= 60) return "Amigos Próximos";
+    if (b >= 30) return "Amigos";
+    return "Conhecidos";
+  }
+
+  function renderState(s) {
+    if (!s) return;
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    set("head-bond-val", s.bond + "%");
+    set("badge-mood", s.mood_label);
+    set("badge-bond", "\u{1F496} " + bondTier(s.bond) + " (" + s.bond + "/100)");
+    set("badge-days", "\u{1F4C5} " + s.days_together + (s.days_together === 1 ? " dia juntos" : " dias juntos"));
+    const bm = document.getElementById("badge-mess");
+    if (bm) {
+      bm.hidden = !(s.mess > 0);
+      bm.textContent = "\u{1F4A9} " + s.mess + (s.mess === 1 ? " sujeira" : " sujeiras");
+    }
+    set("brain-bond-label", bondTier(s.bond));
+    set("brain-bond-val", s.bond + " / 100");
+    const bar = document.getElementById("brain-bar");
+    if (bar) bar.style.width = s.bond + "%";
+    set("stat-pets", s.stats ? s.stats.pets : 0);
+    set("stat-eaten", s.stats ? s.stats.eaten : 0);
+    set("stat-toys", s.stats ? s.stats.toys : 0);
+    set("stat-cleaned", s.stats ? s.stats.cleaned : 0);
+    set("stat-sessions", s.stats ? s.stats.sessions : 0);
+    const inv = s.inventory || {};
+    for (const k of ["fish", "burger", "coffee", "cookie", "ball", "yarn", "mouse"]) {
+      set("inv-" + k, inv[k] != null ? inv[k] : 0);
+      const card = document.getElementById("card-" + k);
+      if (card) card.classList.toggle("empty", !(inv[k] > 0));
+    }
+  }
+
+  // ================= DESENHO DO PET NO CANVAS (PIXEL ART) ==============
+  function drawPixelClawd(cId) {
+    const cvs = document.getElementById(cId);
+    if (!cvs) return;
+    const c = cvs.getContext("2d");
+    c.clearRect(0, 0, cvs.width, cvs.height);
+
+    const palette = {
+      b: "#2c2622",
+      o: "#d97757",
+      w: "#ffffff",
+      p: "#ff94b8",
+      k: "#1b1918"
+    };
+
+    const sprite = [
+      "....b.......b.....",
+      "...bob.....bob....",
+      "..booob...booob...",
+      ".booooob.booooob..",
+      ".booooooooooooob..",
+      ".boowkooooowkoob..",
+      ".boowkooooowkoob..",
+      ".bopooooooopooob..",
+      ".booooooboooooob..",
+      "..booooooooooob...",
+      "...boooooooooob...",
+      "....bbbbbbbbbb...."
+    ];
+
+    const ox = 1, oy = 1;
+    for (let y = 0; y < sprite.length; y++) {
+      for (let x = 0; x < sprite[y].length; x++) {
+        const ch = sprite[y][x];
+        if (ch !== "." && palette[ch]) {
+          c.fillStyle = palette[ch];
+          c.fillRect((ox + x) * 1.8, (oy + y) * 1.8, 1.8, 1.8);
+        }
+      }
+    }
+  }
+  drawPixelClawd("pet-canvas");
+
+  // ================= ACOES (invocam comandos Rust) =====================
+  async function doAct(kind, item) {
+    try {
+      const r = await T("act", { kind: kind, item: item || null });
+      if (r && r.speech) {
+        toast(r.speech);
+        const sp = document.getElementById("pet-speech");
+        if (sp) sp.textContent = r.speech;
+      }
+      if (r && r.state) renderState(r.state);
+    } catch (e) {
+      toast("Erro: " + e);
+    }
+  }
+
+  function centerOf(el) {
+    const r = el.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
+
+  function actPet(e) {
+    const c = centerOf(e.target);
+    burst(c.x, c.y, "#ff5fa2", 35, 1.2);
+    beep(587, 0.08, 0.06);
+    setTimeout(() => beep(880, 0.12, 0.07), 80);
+    doAct("pet");
+  }
+
+  function actFeed(e, item) {
+    const c = centerOf(e.target);
+    burst(c.x, c.y, "#ffcc4d", 30, 1.1);
+    beep(440, 0.06, 0.06);
+    setTimeout(() => beep(659, 0.09, 0.06), 70);
+    doAct("feed", item || "treat");
+  }
+
+  function actToy(e, toy) {
+    const c = centerOf(e.target);
+    burst(c.x, c.y, "#3d8bff", 28, 1.2);
+    beep(698, 0.08, 0.06);
+    setTimeout(() => beep(1046, 0.12, 0.06), 80);
+    doAct("toy", toy || "ball");
+  }
+
+  function actJump(e) {
+    const cvs = document.getElementById("pet-canvas");
+    if (cvs) {
+      cvs.style.transform = "scale(2.8) translateY(-14px)";
+      setTimeout(() => cvs.style.transform = "scale(2.8)", 220);
+    }
+    const c = centerOf(e.target);
+    burst(c.x, c.y, "#8a5cff", 24, 1.0);
+    beep(523, 0.07, 0.06);
+    setTimeout(() => beep(784, 0.1, 0.06), 70);
+    doAct("jump");
+  }
+
+  function actClean(e) {
+    const c = centerOf(e.target);
+    burst(c.x, c.y, "#3ddc84", 25, 1.0);
+    beep(784, 0.06, 0.05);
+    setTimeout(() => beep(987, 0.1, 0.05), 80);
+    doAct("clean");
+  }
+
+  function actSleep(e) {
+    beep(392, 0.12, 0.04);
+    doAct("sleep");
+  }
+
+  async function actBackup(e) {
+    const c = centerOf(e.target);
+    burst(c.x, c.y, "#8a5cff", 35, 1.2);
+    beep(523, 0.08, 0.06);
+    setTimeout(() => beep(659, 0.08, 0.06), 90);
+    setTimeout(() => beep(1046, 0.15, 0.07), 180);
+    try {
+      const r = await T("backup_export");
+      toast("Backup salvo em: " + r.path);
+    } catch (err) {
+      toast("Falha no backup: " + err);
+    }
+  }
+
+  // ================= IA (config + fala) ===============================
+  let aiProv = 0;
+  function setProv(p) {
+    aiProv = p;
+    document.querySelectorAll("#ai-prov-chips .chip").forEach(c => c.classList.toggle("on", +c.dataset.p === p));
+  }
+  const val = id => (document.getElementById(id) ? document.getElementById(id).value.trim() : "");
+
+  async function saveAi() {
+    try {
+      await T("set_settings", { cfg: {
+        provider: aiProv, key: val("ai-key"), model: val("ai-model"),
+        ai2_url: val("ai2-url"), ai2_key: val("ai2-key"), ai2_model: val("ai2-model")
+      }});
+      beep(660, 0.06, 0.05);
+      toast("Configura\u00e7\u00e3o de IA salva!");
+    } catch (e) { toast("Erro ao salvar: " + e); }
+  }
+
+  async function loadAi() {
+    try {
+      const cfg = await T("get_settings");
+      if (!cfg) return;
+      setProv(cfg.provider || 0);
+      const put = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ""; };
+      put("ai-key", cfg.key); put("ai-model", cfg.model);
+      put("ai2-url", cfg.ai2_url); put("ai2-key", cfg.ai2_key); put("ai2-model", cfg.ai2_model);
+    } catch (e) {}
+  }
+
+  async function testAi() {
+    toast("Chamando a IA\u2026");
+    try {
+      const r = await T("ai_talk", {});
+      const sp = document.getElementById("pet-speech");
+      if (sp) sp.textContent = r;
+      toast(r);
+      beep(740, 0.08, 0.05);
+    } catch (e) { toast(String(e)); }
+  }
+
+  // ================= NAVEGACAO POR ABAS =================
+  function switchTab(tabId) {
+    beep(520, 0.04, 0.03);
+    document.querySelectorAll(".dock-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === tabId));
+    document.querySelectorAll(".page").forEach(p => p.hidden = (p.id !== "page-" + tabId));
+  }
+
+  // ================= SELETOR DE TEMAS =================
+  function setTheme(th) {
+    beep(600, 0.05);
+    document.documentElement.setAttribute("data-theme", th);
+    try { localStorage.setItem("clawd_theme", th); } catch (e) {}
+    document.querySelectorAll("#theme-chips .chip").forEach(c => c.classList.toggle("on", c.dataset.theme === th));
+    toast("Tema " + th.toUpperCase() + " aplicado!");
+  }
+  try {
+    const savedTheme = localStorage.getItem("clawd_theme");
+    if (savedTheme) { document.documentElement.setAttribute("data-theme", savedTheme);
+      document.querySelectorAll("#theme-chips .chip").forEach(c => c.classList.toggle("on", c.dataset.theme === savedTheme)); }
+  } catch (e) {}
+
+  // ================= INICIALIZACAO =================
+  (async function init() {
+    try {
+      const r = await T("get_state");
+      if (r && r.state) renderState(r.state);
+      if (r && r.speech) {
+        const sp = document.getElementById("pet-speech");
+        if (sp) sp.textContent = r.speech;
+      }
+    } catch (e) {
+      toast("Erro ao carregar o pet: " + e);
+    }
+    loadAi();
+  })();
+  </script>
+</body>
+</html>
