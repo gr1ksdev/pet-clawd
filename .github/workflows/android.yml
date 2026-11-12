@@ -32,6 +32,7 @@ jobs:
           sdkmanager --install "platform-tools" "platforms;android-34" \
             "build-tools;34.0.0" "ndk;27.0.12077973" >/dev/null
           echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/27.0.12077973" >> "$GITHUB_ENV"
 
       - name: Instalar Tauri CLI
         run: cargo install tauri-cli --version "^2" --locked

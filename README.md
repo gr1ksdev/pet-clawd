@@ -47,6 +47,20 @@ O APK sai em `src-tauri/gen/android/app/build/outputs/apk/debug/`.
 | Fala do Clawd via IA (opcional) | Mantido — Gemini/OpenAI/compatível + fallback |
 | Devorar ícones/gravidade | Ficam para a v2 (dependem de overlay) |
 
+## Ambiente de desenvolvimento local (este aparelho)
+O aparelho é Arch ARM em proot (aarch64). Para rodar `cargo check`
+(validação do código Rust, sem NDK) existe um gcc glibc em
+`~/tools/hostcc/` (gcc 16.1.1 extraído dos pacotes do ArchARM em
+`~/tools/sysroot`). Basta:
+
+```bash
+source ~/.cargo/env && source ~/tools/hostcc/env.sh
+cd src-tauri && cargo check --target aarch64-linux-android
+```
+
+O APK final **não** pode ser compilado aqui (NDK oficial só tem binários
+x86_64) — use o GitHub Actions ou uma máquina Linux x86_64.
+
 ## Roadmap v2
 - Mini-janela flutuante real (permissão `SYSTEM_ALERT_WINDOW`);
 - Backup com share sheet direto;
