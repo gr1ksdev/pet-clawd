@@ -23,6 +23,7 @@ pub struct BackupResult {
 pub struct StateResult {
     pub state: PetState,
     pub speech: String,
+    pub mood_label: String,
 }
 
 fn save_all(app: &tauri::AppHandle, ctx: &AppCtx) {
@@ -39,10 +40,15 @@ pub fn get_state(app: tauri::AppHandle, ctx: tauri::State<AppCtx>) -> Result<Sta
         s.stats.sessions += 1;
     }
     let speech = s.idle_speech();
+    let mood_label = s.mood_label().to_string();
     let state = s.clone();
     drop(s);
     save_all(&app, &ctx);
-    Ok(StateResult { state, speech })
+    Ok(StateResult {
+        state,
+        speech,
+        mood_label,
+    })
 }
 
 #[tauri::command]

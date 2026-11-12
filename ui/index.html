@@ -508,13 +508,14 @@ button { border: 0; background: none; cursor: pointer; padding: 0; }
     return "Conhecidos";
   }
 
-  function renderState(s) {
+  function renderState(s, moodLabel) {
     if (!s) return;
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
     set("head-bond-val", s.bond + "%");
-    set("badge-mood", s.mood_label);
+    set("badge-mood", moodLabel || "\u{1F642} Contente");
     set("badge-bond", "\u{1F496} " + bondTier(s.bond) + " (" + s.bond + "/100)");
-    set("badge-days", "\u{1F4C5} " + s.days_together + (s.days_together === 1 ? " dia juntos" : " dias juntos"));
+    const days = s.first_met ? Math.floor((Date.now() / 1000 - s.first_met) / 86400) + 1 : 1;
+    set("badge-days", "\u{1F4C5} " + days + (days === 1 ? " dia juntos" : " dias juntos"));
     const bm = document.getElementById("badge-mess");
     if (bm) {
       bm.hidden = !(s.mess > 0);
@@ -589,7 +590,7 @@ button { border: 0; background: none; cursor: pointer; padding: 0; }
         const sp = document.getElementById("pet-speech");
         if (sp) sp.textContent = r.speech;
       }
-      if (r && r.state) renderState(r.state);
+      if (r && r.state) renderState(r.state, r.mood_label);
     } catch (e) {
       toast("Erro: " + e);
     }
@@ -730,7 +731,7 @@ button { border: 0; background: none; cursor: pointer; padding: 0; }
   (async function init() {
     try {
       const r = await T("get_state");
-      if (r && r.state) renderState(r.state);
+      if (r && r.state) renderState(r.state, r.mood_label);
       if (r && r.speech) {
         const sp = document.getElementById("pet-speech");
         if (sp) sp.textContent = r.speech;

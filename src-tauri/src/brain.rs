@@ -71,6 +71,7 @@ impl Default for PetState {
 pub struct ActResult {
     pub state: PetState,
     pub speech: String,
+    pub mood_label: String,
 }
 
 impl PetState {
@@ -132,6 +133,7 @@ impl PetState {
         self.last_tick = now;
     }
 
+    #[allow(dead_code)]
     pub fn days_together(&self) -> u64 {
         Self::now().saturating_sub(self.first_met) / 86_400 + 1
     }
@@ -191,7 +193,7 @@ impl PetState {
     /// Ações do pet — mesmas do plugin (actPet/actFeed/actToy/actClean/…).
     pub fn act(&mut self, kind: &str, item: Option<&str>) -> ActResult {
         self.tick();
-        let mut speech = String::new();
+        let speech: String;
         match kind {
             "pet" => {
                 self.mood += 6;
@@ -295,6 +297,7 @@ impl PetState {
         ActResult {
             state: self.clone(),
             speech,
+            mood_label: self.mood_label().to_string(),
         }
     }
 }
