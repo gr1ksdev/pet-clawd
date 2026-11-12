@@ -32,8 +32,15 @@ jobs:
           mv /tmp/ct/cmdline-tools "$SDK/cmdline-tools/latest"
           export PATH="$SDK/cmdline-tools/latest/bin:$PATH"
           yes | sdkmanager --licenses >/dev/null || true
-          sdkmanager --install "platform-tools" "platforms;android-34" \
-            "build-tools;34.0.0" "ndk;27.0.12077973" >/dev/null
+          # Template Tauri atual: compileSdk 37 / AGP 9.3 / build-tools até 37.
+          # Instala o que existir (|| true evita falhar num pacote ausente).
+          for p in "platform-tools" "platforms;android-34" "platforms;android-35" \
+                   "platforms;android-36" "platforms;android-37" \
+                   "build-tools;34.0.0" "build-tools;35.0.0" "build-tools;36.0.0" \
+                   "build-tools;37.0.0" "ndk;27.0.12077973"; do
+            sdkmanager --install "$p" >/dev/null || echo "skip: $p"
+          done
+          sdkmanager --list_installed | head -20
           echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
           echo "ANDROID_NDK_HOME=$SDK/ndk/27.0.12077973" >> "$GITHUB_ENV"
           echo "$SDK/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
@@ -49,7 +56,17 @@ jobs:
         run: cargo tauri android init
 
       - name: Build APK (debug, aarch64)
-        run: cargo tauri android build --target aarch64 --debug --apk
+        run: |
+          set -o pipefail
+          cargo tauri android build --target aarch64 --debug --apk 2>&1 | tee build.log
+
+      - name: Log completo (em caso de falha)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
+          if-no-files-found: ignore
 
       - name: Localizar APK
         id: apk
